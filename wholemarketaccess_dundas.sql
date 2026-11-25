@@ -15,7 +15,7 @@ WITH base AS (
         json_extract_array_element_text('[' || w.changedfields || ']', 0, true)      AS changedfields_txt
     FROM research.wholemarketaccess w
     WHERE w.reportid = 2040
-      AND w.refreshid = 8270
+      AND w.refreshid = 8699
 ),
 lvl1 AS (
     SELECT
