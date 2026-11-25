@@ -6,13 +6,14 @@
 WITH base AS (
     SELECT
         w.*,
-        /* JSON columns are VARCHAR. Wrapping in [ ] and taking element 0 returns the JSON text */
-        /* whether it is stored normally or double-encoded as a quoted string. */
-        json_extract_array_element_text('[' || w.primarydocument || ']', 0, true)    AS pd,
-        json_extract_array_element_text('[' || w.secondarydocument || ']', 0, true)  AS sd,
-        json_extract_array_element_text('[' || w.policydata || ']', 0, true)         AS pol,
-        json_extract_array_element_text('[' || w.cdv || ']', 0, true)                AS cdvj,
-        json_extract_array_element_text('[' || w.changedfields || ']', 0, true)      AS changedfields_txt
+        /* policydata, primarydocument, secondarydocument are VARCHAR; cdv and changedfields are SUPER. */
+        /* SUPER columns go through JSON_SERIALIZE first. Wrapping in [ ] and taking element 0 returns */
+        /* the JSON text whether it is stored normally or double-encoded as a quoted string. */
+        json_extract_array_element_text('[' || w.primarydocument || ']', 0, true)                 AS pd,
+        json_extract_array_element_text('[' || w.secondarydocument || ']', 0, true)               AS sd,
+        json_extract_array_element_text('[' || w.policydata || ']', 0, true)                      AS pol,
+        json_extract_array_element_text('[' || JSON_SERIALIZE(w.cdv) || ']', 0, true)             AS cdvj,
+        json_extract_array_element_text('[' || JSON_SERIALIZE(w.changedfields) || ']', 0, true)   AS changedfields_txt
     FROM research.wholemarketaccess w
     WHERE w.reportid = 2040
       AND w.refreshid = 8699
